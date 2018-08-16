@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.bitmain.hale.springmvc.controller.DoController;
+import com.bitmain.hale.springmvc.controller.LoginController;
 import com.bitmain.hale.springmvc.di.Autowired;
 import com.bitmain.hale.springmvc.utils.AndroidSpringMvc;
 
@@ -12,8 +13,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Autowired(name = "b")
     DoController doController;
+
     @Autowired
-    Modle modle;
+    LoginController loginController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         AndroidSpringMvc.inject(this);
         Log.i("mvc","22222");
         doController.doSomething();
-        Log.i("mvc",modle.name);
+
+        loginController.login("aaaa","bbbbbb");
     }
 }
