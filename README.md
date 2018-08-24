@@ -13,3 +13,9 @@ android use spring mvc, make your code better and clean.
 	dependencies {
 	        implementation 'com.github.dinghu:android-springmvc:1.0.0'
 	}
+
+
+
+继承AndroidSpringMvcApplication
+
+使用 AndroidSpringMvc.inject(this)注入依赖
