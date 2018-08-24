@@ -18,8 +18,6 @@ public class BusinessServiceImplA implements BusinessService{
 
     @Override
     public void doSomething() {
-        Log.i("mvc","hello android mvc");
-
         dataDAo.insert();
     }
 }

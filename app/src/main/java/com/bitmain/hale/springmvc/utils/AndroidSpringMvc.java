@@ -1,16 +1,24 @@
 package com.bitmain.hale.springmvc.utils;
 
+import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.bitmain.hale.springmvc.MainActivity;
 import com.bitmain.hale.springmvc.config.BeanManager;
 import com.bitmain.hale.springmvc.di.Autowired;
 import com.bitmain.hale.springmvc.di.Controller;
 import com.bitmain.hale.springmvc.di.Dao;
 import com.bitmain.hale.springmvc.di.Service;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+
+import dalvik.system.DexFile;
 
 /**
  * Created by harry.ding on 2018/8/15.
@@ -19,6 +27,15 @@ import java.util.HashMap;
 public class AndroidSpringMvc {
     private static AndroidSpringMvc instance = new AndroidSpringMvc();
     private HashMap<Class<?>, Object> beanMap = new HashMap();
+
+    public static void init(Context context) {
+        try {
+            BeanManager.init(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private Object injectAsSingleInstance(Class<?> cls) throws Exception {
         if (instance.beanMap.get(cls) == null) {
@@ -58,15 +75,19 @@ public class AndroidSpringMvc {
                             if ((!TextUtils.isEmpty(autowiredAnnotationName) && autowiredAnnotationName.equals(serviceAnnotationName)
                                     || (TextUtils.isEmpty(autowiredAnnotationName)))) {
                                 injectInstance = serviceAnnotation.singleInstance() ? injectAsSingleInstance(cls) : injectAsNewInstance(cls);
+
+                                field.setAccessible(true);
                                 field.set(object, injectInstance);
                                 break;
                             }
                         } else if (controllerAnnotation != null) {//注入Controller
                             injectInstance = controllerAnnotation.singleInstance() ? injectAsSingleInstance(cls) : injectAsNewInstance(cls);
+                            field.setAccessible(true);
                             field.set(object, injectInstance);
                             break;
                         } else if (daoAnnotation != null) {//注入Dao
                             injectInstance = daoAnnotation.singleInstance() ? injectAsSingleInstance(cls) : injectAsNewInstance(cls);
+                            field.setAccessible(true);
                             field.set(object, injectInstance);
                             break;
                         }
@@ -75,6 +96,7 @@ public class AndroidSpringMvc {
                 if (injectInstance == null) {
                     try {
                         injectInstance = fieldType.newInstance();
+                        field.setAccessible(true);
                         field.set(object, injectInstance);
                         break;
                     } catch (Exception e) {

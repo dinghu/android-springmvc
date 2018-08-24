@@ -7,9 +7,6 @@ import com.bitmain.hale.springmvc.di.Dao;
 /**
  * Created by harry.ding on 2018/8/16.
  */
-@Dao
-public class AccountDao {
-    public void insert(String account, String password) {
-        Log.i("mvc", "login .........account=" + account + ",password=" + password);
-    }
+public interface AccountDao {
+    public void insert(String account, String password);
 }

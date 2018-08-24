@@ -8,6 +8,5 @@ import com.bitmain.hale.springmvc.service.BusinessService;
 public class BusinessServiceImplB implements BusinessService {
     @Override
     public void doSomething() {
-        Log.i("mvc","hello android mvc 2");
     }
 }

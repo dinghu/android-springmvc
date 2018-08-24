@@ -1,19 +1,17 @@
 package com.bitmain.hale.springmvc;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.bitmain.hale.springmvc.config.BeanManager;
 import com.bitmain.hale.springmvc.controller.DoController;
 import com.bitmain.hale.springmvc.controller.LoginController;
 import com.bitmain.hale.springmvc.di.Autowired;
 import com.bitmain.hale.springmvc.utils.AndroidSpringMvc;
 
 public class MainActivity extends AppCompatActivity {
-
-    @Autowired(name = "b")
-    DoController doController;
-
     @Autowired
     LoginController loginController;
 
@@ -21,11 +19,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.i("mvc","11111");
-        AndroidSpringMvc.inject(this);
-        Log.i("mvc","22222");
-        doController.doSomething();
 
-        loginController.login("aaaa","bbbbbb");
+        AndroidSpringMvc.inject(this);
+
+        loginController.login("aaaa", "bbbbbb");
     }
 }
