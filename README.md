@@ -15,12 +15,18 @@ android use spring mvc, make your code better and clean.
 	}
 
 
+1.AndroidManifet.xml里面配置@Dao @Controller @Service直接的包名
 
-继承AndroidSpringMvcApplication
+ <meta-data
+            android:name="component-scan"
+            android:value="xx.xx.xx.xx.service,xx.xx.xx.xx.controller,xx.xx.xx.xx.dao" />
 
-使用 AndroidSpringMvc.inject(this)注入依赖
 
-混淆配置
+2.继承AndroidSpringMvcApplication
+
+3.使用 AndroidSpringMvc.inject(this)注入依赖
+
+4.混淆配置
 
 
 -keep class com.bitmain.hale.springmvc.controller.** { @com.bitmain.hale.springmvc.di.Autowired <fields>;}
