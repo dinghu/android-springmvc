@@ -20,7 +20,7 @@ android use spring mvc, make your code better and clean.
  <meta-data android:name="component-scan" android:value="xx.xx.xx.xx.service,xx.xx.xx.xx.controller,xx.xx.xx.xx.dao" />
 
 
-2.继承AndroidSpringMvcApplication
+2.继承AAndroidMvcApplication
 
 3.使用 AndroidSpringMvc.inject(this)注入依赖
 
