@@ -11,7 +11,7 @@ android use spring mvc, make your code better and clean.
   
   
 	dependencies {
-	        implementation 'com.github.dinghu:android-springmvc:1.0.0'
+	        implementation 'com.github.dinghu:android-springmvc:1.0.5'
 	}
 
 
