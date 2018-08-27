@@ -15,11 +15,9 @@ android use spring mvc, make your code better and clean.
 	}
 
 
-1.AndroidManifet.xml里面配置@Dao @Controller @Service直接的包名
+1.AndroidManifet.xml里面配置@Dao @Controller @Service注解的包名
 
- <meta-data
-            android:name="component-scan"
-            android:value="xx.xx.xx.xx.service,xx.xx.xx.xx.controller,xx.xx.xx.xx.dao" />
+ <meta-data android:name="component-scan" android:value="xx.xx.xx.xx.service,xx.xx.xx.xx.controller,xx.xx.xx.xx.dao" />
 
 
 2.继承AndroidSpringMvcApplication
