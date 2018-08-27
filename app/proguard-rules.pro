@@ -47,5 +47,7 @@
 -keep class com.google.gson.** { *; }
 -keep class com.google.gson.stream.** { *; }
 #
--keep class com.bitmain.hale.springmvc.** { *; }
+-keep class com.bitmain.hale.springmvc.controller.** { @com.bitmain.hale.springmvc.di.Autowired <fields>;}
+-keep class com.bitmain.hale.springmvc.dao.** { @com.bitmain.hale.springmvc.di.Autowired <fields>; }
+-keep class com.bitmain.hale.springmvc.service.** { @com.bitmain.hale.springmvc.di.Autowired <fields>; }
 -keep interface com.bitmain.hale.springmvc.** { *; }

@@ -103,7 +103,10 @@ public class AndroidSpringMvc {
                         throw new RuntimeException(fieldType + " cannot Autowired inject");
                     }
                 }
+
             }
+
+            Log.i("mvc",field.getName()+"");
         }
 
     }

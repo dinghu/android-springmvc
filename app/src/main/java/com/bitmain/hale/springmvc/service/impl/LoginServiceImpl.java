@@ -1,5 +1,6 @@
 package com.bitmain.hale.springmvc.service.impl;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.bitmain.hale.springmvc.dao.AccountDao;
