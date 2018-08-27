@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.bitmain.hale.springmvc.dao.AccountDao;
-import com.bitmain.hale.springmvc.di.Autowired;
-import com.bitmain.hale.springmvc.di.Service;
+import com.bitmain.hale.androidmvc.di.Autowired;
+import com.bitmain.hale.androidmvc.di.Service;
 import com.bitmain.hale.springmvc.service.LoginService;
 
 /**

@@ -2,8 +2,8 @@ package com.bitmain.hale.springmvc.controller;
 
 import android.util.Log;
 
-import com.bitmain.hale.springmvc.di.Autowired;
-import com.bitmain.hale.springmvc.di.Controller;
+import com.bitmain.hale.androidmvc.di.Autowired;
+import com.bitmain.hale.androidmvc.di.Controller;
 import com.bitmain.hale.springmvc.service.BusinessService;
 import com.bitmain.hale.springmvc.service.LoginService;
 

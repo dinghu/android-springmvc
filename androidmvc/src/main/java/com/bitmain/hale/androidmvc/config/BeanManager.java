@@ -1,20 +1,21 @@
-package com.bitmain.hale.springmvc.config;
+package com.bitmain.hale.androidmvc.config;
 
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.bitmain.hale.springmvc.di.Controller;
-import com.bitmain.hale.springmvc.di.Dao;
-import com.bitmain.hale.springmvc.di.Service;
+
+import com.bitmain.hale.androidmvc.di.Controller;
+import com.bitmain.hale.androidmvc.di.Dao;
+import com.bitmain.hale.androidmvc.di.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
 import dalvik.system.DexFile;
@@ -45,15 +46,39 @@ public class BeanManager {
     }
 
 
+    @SuppressWarnings("unchecked")
+    public static <T> T getMetaData(Context context, String name) {
+        try {
+            final ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(),
+                    PackageManager.GET_META_DATA);
+
+            if (ai.metaData != null) {
+                return (T) ai.metaData.get(name);
+            }
+        }
+        catch (Exception e) {
+            Log.i("mvc","Couldn't find meta-data: " + name);
+        }
+
+        return null;
+    }
+
+
     public static void init(Context context) throws IOException {
-        if (!isLoadBean) {
-            scanForModel(context);
-            isLoadBean = true;
+        String scanPackageList = getMetaData(context,"component-scan");
+        if (scanPackageList != null) {
+            String pakageList[] = scanPackageList.split(",");
+            if (!isLoadBean) {
+                scanForModel(context,pakageList);
+                isLoadBean = true;
+            }
+        }else {
+            throw new RuntimeException("cant load component-scan config");
         }
 
     }
 
-    private static void scanForModel(Context context) throws IOException {
+    private static void scanForModel(Context context,String pakageList[]) throws IOException {
         String packageName = context.getPackageName();
         String sourcePath = context.getApplicationInfo().sourceDir;
         List<String> paths = new ArrayList<String>();
@@ -64,10 +89,11 @@ public class BeanManager {
 
             while (entries.hasMoreElements()) {
                 String path = entries.nextElement();
-                if (path.contains("com.bitmain.hale.springmvc.service.impl")
-                        || path.contains("com.bitmain.hale.springmvc.controller")
-                        || path.contains("com.bitmain.hale.springmvc.dao")) {
-                    paths.add(path);
+                for (int i = 0; i < pakageList.length; i++) {
+                    if (path.contains(pakageList[i])) {
+                        paths.add(path);
+                        break;
+                    }
                 }
             }
         }
@@ -79,10 +105,11 @@ public class BeanManager {
             while (resources.hasMoreElements()) {
                 String path = resources.nextElement().getFile();
                 if (path.contains("bin") || path.contains("classes")) {
-                    if (path.contains("com.bitmain.hale.springmvc.service.impl")
-                            || path.contains("com.bitmain.hale.springmvc.controller")
-                            || path.contains("com.bitmain.hale.springmvc.dao")) {
-                        paths.add(path);
+                    for (int i = 0; i < pakageList.length; i++) {
+                        if (path.contains(pakageList[i])) {
+                            paths.add(path);
+                            break;
+                        }
                     }
                 }
             }

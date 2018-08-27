@@ -1,4 +1,4 @@
-package com.bitmain.hale.springmvc.di;
+package com.bitmain.hale.androidmvc.di;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,24 +1,18 @@
-package com.bitmain.hale.springmvc.utils;
+package com.bitmain.hale.androidmvc.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.bitmain.hale.springmvc.MainActivity;
-import com.bitmain.hale.springmvc.config.BeanManager;
-import com.bitmain.hale.springmvc.di.Autowired;
-import com.bitmain.hale.springmvc.di.Controller;
-import com.bitmain.hale.springmvc.di.Dao;
-import com.bitmain.hale.springmvc.di.Service;
+import com.bitmain.hale.androidmvc.config.BeanManager;
+import com.bitmain.hale.androidmvc.di.Autowired;
+import com.bitmain.hale.androidmvc.di.Controller;
+import com.bitmain.hale.androidmvc.di.Dao;
+import com.bitmain.hale.androidmvc.di.Service;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
-
-import dalvik.system.DexFile;
 
 /**
  * Created by harry.ding on 2018/8/15.
