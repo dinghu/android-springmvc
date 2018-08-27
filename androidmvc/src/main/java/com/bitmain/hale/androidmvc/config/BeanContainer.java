@@ -24,21 +24,10 @@ import dalvik.system.DexFile;
  * Created by harry.ding on 2018/8/13.
  */
 
-public class BeanManager {
+public class BeanContainer {
 
 
     static boolean isLoadBean = false;
-
-//    private static HashMap<Class<? extends Annotation>, List<Class<?>>> beanMap = new HashMap();
-
-    //    static {
-//        beanMap.put(Service.class, new ArrayList<Class<?>>());
-//        beanMap.put(Dao.class, new ArrayList<Class<?>>());
-//        beanMap.put(Controller.class, new ArrayList<Class<?>>());
-//    }
-//    public static List<Class<?>> getBeans(Class<? extends Annotation> annotationClass) {
-//        return beanMap.get(annotationClass);
-//    }
     private static ArrayList<Class<?>> beans = new ArrayList<>();
 
     public static ArrayList<Class<?>> getBeans() {
@@ -55,30 +44,34 @@ public class BeanManager {
             if (ai.metaData != null) {
                 return (T) ai.metaData.get(name);
             }
-        }
-        catch (Exception e) {
-            Log.i("mvc","Couldn't find meta-data: " + name);
+        } catch (Exception e) {
+            Log.i("mvc", "Couldn't find meta-data: " + name);
         }
 
         return null;
     }
 
 
-    public static void init(Context context) throws IOException {
-        String scanPackageList = getMetaData(context,"component-scan");
-        if (scanPackageList != null) {
-            String pakageList[] = scanPackageList.split(",");
-            if (!isLoadBean) {
-                scanForModel(context,pakageList);
-                isLoadBean = true;
+    public static void init(Configuration configuration) throws IOException {
+        if (!isLoadBean) {
+            if (configuration.getBeanClasses().isEmpty()) {
+                String scanPackageList = getMetaData(configuration.getContext(), "component-scan");
+                if (scanPackageList != null) {
+                    String pakageList[] = scanPackageList.split(",");
+                    scanForModel(configuration.getContext(), pakageList);
+                } else {
+                    throw new RuntimeException("cant load component-scan config");
+                }
+            } else {
+                beans.addAll(configuration.getBeanClasses());
             }
-        }else {
-            throw new RuntimeException("cant load component-scan config");
+            isLoadBean = true;
         }
+
 
     }
 
-    private static void scanForModel(Context context,String pakageList[]) throws IOException {
+    private static void scanForModel(Context context, String pakageList[]) throws IOException {
         String packageName = context.getPackageName();
         String sourcePath = context.getApplicationInfo().sourceDir;
         List<String> paths = new ArrayList<String>();
@@ -154,7 +147,9 @@ public class BeanManager {
                 Controller controllerAnnotation = discoveredClass.getAnnotation(Controller.class);
                 Dao daoAnnotation = discoveredClass.getAnnotation(Dao.class);
                 if (serviceAnnotation != null || controllerAnnotation != null || daoAnnotation != null) {
-                    beans.add(discoveredClass);
+                    if (!beans.contains(discoveredClass)) {
+                        beans.add(discoveredClass);
+                    }
                 }
             } catch (ClassNotFoundException e) {
                 Log.e("Couldn't create class.", e.getMessage());

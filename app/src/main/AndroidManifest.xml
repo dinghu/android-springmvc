@@ -20,7 +20,7 @@
 
         <meta-data
             android:name="component-scan"
-            android:value="com.bitmain.hale.springmvc.service,om.bitmain.hale.springmvc.controller,om.bitmain.hale.springmvc.dao" />
+            android:value="com.bitmain.hale.springmvc.service,com.bitmain.hale.springmvc.controller,com.bitmain.hale.springmvc.dao" />
     </application>
 
 

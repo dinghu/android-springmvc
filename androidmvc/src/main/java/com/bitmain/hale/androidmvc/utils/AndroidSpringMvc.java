@@ -4,7 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.bitmain.hale.androidmvc.config.BeanManager;
+import com.bitmain.hale.androidmvc.config.BeanContainer;
+import com.bitmain.hale.androidmvc.config.Configuration;
 import com.bitmain.hale.androidmvc.di.Autowired;
 import com.bitmain.hale.androidmvc.di.Controller;
 import com.bitmain.hale.androidmvc.di.Dao;
@@ -22,9 +23,9 @@ public class AndroidSpringMvc {
     private static AndroidSpringMvc instance = new AndroidSpringMvc();
     private HashMap<Class<?>, Object> beanMap = new HashMap();
 
-    public static void init(Context context) {
+    public static void init( Configuration configuration) {
         try {
-            BeanManager.init(context);
+            BeanContainer.init(configuration);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,14 +56,14 @@ public class AndroidSpringMvc {
                 Class<?> fieldType = field.getType();
                 Object injectInstance = null;
                 //遍历实体配置
-                ArrayList<Class<?>> classArrayList = BeanManager.getBeans();
+                ArrayList<Class<?>> classArrayList = BeanContainer.getBeans();
                 for (int i = 0; i < classArrayList.size(); i++) {
                     if (fieldType.isAssignableFrom(classArrayList.get(i))) {
                         Class<?> cls = classArrayList.get(i);
                         Service serviceAnnotation = cls.getAnnotation(Service.class);
                         Controller controllerAnnotation = cls.getAnnotation(Controller.class);
                         Dao daoAnnotation = cls.getAnnotation(Dao.class);
-                        if (serviceAnnotation != null) {//注入Service
+                        if (cls.getAnnotation(Service.class) != null) {//注入Service
                             String autowiredAnnotationName = fieldAnnotation.name();
                             String serviceAnnotationName = serviceAnnotation.name();
                             //可以注入的条件是名字相同 或者 autowiredAnnotationName无标记
