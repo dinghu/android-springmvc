@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dalvik.system.DexFile;
 
@@ -28,12 +30,25 @@ public class BeanContainer {
 
 
     static boolean isLoadBean = false;
-    private static ArrayList<Class<?>> beans = new ArrayList<>();
+    private static HashMap<String, Class<?>> beans = new HashMap<>();
 
-    public static ArrayList<Class<?>> getBeans() {
-        return beans;
+    public static ArrayList<Class<?>> getAllBeans() {
+        ArrayList<Class<?>> allBeans = new ArrayList<>();
+        for (Map.Entry<String, Class<?>> entry : beans.entrySet()) {
+            allBeans.add(entry.getValue());
+        }
+        return allBeans;
     }
 
+    public static Class<?> getBean(String name) {
+        return beans.get(name);
+    }
+
+    public static void addBean(String name, Class cls) {
+        if (!beans.containsKey(name)) {
+            beans.put(name, cls);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T getMetaData(Context context, String name) {
@@ -63,7 +78,9 @@ public class BeanContainer {
                     throw new RuntimeException("cant load component-scan config");
                 }
             } else {
-                beans.addAll(configuration.getBeanClasses());
+                for (Class<?> cls : configuration.getBeanClasses()) {
+                    addBean(cls.getName(), cls);
+                }
             }
             isLoadBean = true;
         }
@@ -147,9 +164,7 @@ public class BeanContainer {
                 Controller controllerAnnotation = discoveredClass.getAnnotation(Controller.class);
                 Dao daoAnnotation = discoveredClass.getAnnotation(Dao.class);
                 if (serviceAnnotation != null || controllerAnnotation != null || daoAnnotation != null) {
-                    if (!beans.contains(discoveredClass)) {
-                        beans.add(discoveredClass);
-                    }
+                    addBean(discoveredClass.getName(), discoveredClass);
                 }
             } catch (ClassNotFoundException e) {
                 Log.e("Couldn't create class.", e.getMessage());

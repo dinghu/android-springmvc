@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Controller {
+public @interface Controller{
     //是否加载为单例，默认单例
     boolean singleInstance() default true;
 }

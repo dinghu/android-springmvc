@@ -23,7 +23,7 @@ public class AndroidSpringMvc {
     private static AndroidSpringMvc instance = new AndroidSpringMvc();
     private HashMap<Class<?>, Object> beanMap = new HashMap();
 
-    public static void init( Configuration configuration) {
+    public static void init(Configuration configuration) {
         try {
             BeanContainer.init(configuration);
         } catch (Exception e) {
@@ -55,39 +55,70 @@ public class AndroidSpringMvc {
             if (fieldAnnotation != null) {
                 Class<?> fieldType = field.getType();
                 Object injectInstance = null;
-                //遍历实体配置
-                ArrayList<Class<?>> classArrayList = BeanContainer.getBeans();
-                for (int i = 0; i < classArrayList.size(); i++) {
-                    if (fieldType.isAssignableFrom(classArrayList.get(i))) {
-                        Class<?> cls = classArrayList.get(i);
-                        Service serviceAnnotation = cls.getAnnotation(Service.class);
-                        Controller controllerAnnotation = cls.getAnnotation(Controller.class);
-                        Dao daoAnnotation = cls.getAnnotation(Dao.class);
-                        if (cls.getAnnotation(Service.class) != null) {//注入Service
-                            String autowiredAnnotationName = fieldAnnotation.name();
-                            String serviceAnnotationName = serviceAnnotation.name();
-                            //可以注入的条件是名字相同 或者 autowiredAnnotationName无标记
-                            if ((!TextUtils.isEmpty(autowiredAnnotationName) && autowiredAnnotationName.equals(serviceAnnotationName)
-                                    || (TextUtils.isEmpty(autowiredAnnotationName)))) {
-                                injectInstance = serviceAnnotation.singleInstance() ? injectAsSingleInstance(cls) : injectAsNewInstance(cls);
+                String autowiredAnnotationName = fieldAnnotation.name();
 
-                                field.setAccessible(true);
-                                field.set(object, injectInstance);
+                String beanName = fieldType.getName();
+                if (!TextUtils.isEmpty(autowiredAnnotationName)) {
+                    beanName = fieldType.getName() + "_" + autowiredAnnotationName;
+                }
+
+                Class<?> beanCls = BeanContainer.getBean(beanName);
+                if (beanCls == null) {
+                    //遍历实体配置
+                    ArrayList<Class<?>> classArrayList = BeanContainer.getAllBeans();
+                    for (int i = 0; i < classArrayList.size(); i++) {
+                        if (fieldType.isAssignableFrom(classArrayList.get(i))) {//找到实现类
+                            Class<?> cls = classArrayList.get(i);
+                            Service serviceAnnotation = cls.getAnnotation(Service.class);
+                            Controller controllerAnnotation = cls.getAnnotation(Controller.class);
+                            Dao daoAnnotation = cls.getAnnotation(Dao.class);
+                            if (cls.getAnnotation(Service.class) != null) {//注入Service
+                                String serviceAnnotationName = serviceAnnotation.name();
+                                //可以注入的条件是名字相同 或者 autowiredAnnotationName无标记
+                                if ((!TextUtils.isEmpty(autowiredAnnotationName) && autowiredAnnotationName.equals(serviceAnnotationName)
+                                        || (TextUtils.isEmpty(autowiredAnnotationName)))) {
+                                    beanCls = cls;
+                                    break;
+                                }
+                            } else if (controllerAnnotation != null) {//注入Controller
+                                beanCls = cls;
+                                break;
+                            } else if (daoAnnotation != null) {//注入Dao
+                                beanCls = cls;
                                 break;
                             }
-                        } else if (controllerAnnotation != null) {//注入Controller
-                            injectInstance = controllerAnnotation.singleInstance() ? injectAsSingleInstance(cls) : injectAsNewInstance(cls);
-                            field.setAccessible(true);
-                            field.set(object, injectInstance);
-                            break;
-                        } else if (daoAnnotation != null) {//注入Dao
-                            injectInstance = daoAnnotation.singleInstance() ? injectAsSingleInstance(cls) : injectAsNewInstance(cls);
-                            field.setAccessible(true);
-                            field.set(object, injectInstance);
-                            break;
                         }
                     }
+
+                    if (beanCls != null) {
+                        BeanContainer.addBean(beanName, beanCls);
+                    }
                 }
+
+                if (beanCls != null) {
+                    Service serviceAnnotation = beanCls.getAnnotation(Service.class);
+                    Controller controllerAnnotation = beanCls.getAnnotation(Controller.class);
+                    Dao daoAnnotation = beanCls.getAnnotation(Dao.class);
+                    if (serviceAnnotation != null) {//注入Service
+                        String serviceAnnotationName = serviceAnnotation.name();
+                        //可以注入的条件是名字相同 或者 autowiredAnnotationName无标记
+                        if ((!TextUtils.isEmpty(autowiredAnnotationName) && autowiredAnnotationName.equals(serviceAnnotationName)
+                                || (TextUtils.isEmpty(autowiredAnnotationName)))) {
+                            injectInstance = serviceAnnotation.singleInstance() ? injectAsSingleInstance(beanCls) : injectAsNewInstance(beanCls);
+                            field.setAccessible(true);
+                            field.set(object, injectInstance);
+                        }
+                    } else if (controllerAnnotation != null) {//注入Controller
+                        injectInstance = controllerAnnotation.singleInstance() ? injectAsSingleInstance(beanCls) : injectAsNewInstance(beanCls);
+                        field.setAccessible(true);
+                        field.set(object, injectInstance);
+                    } else if (daoAnnotation != null) {//注入Dao
+                        injectInstance = daoAnnotation.singleInstance() ? injectAsSingleInstance(beanCls) : injectAsNewInstance(beanCls);
+                        field.setAccessible(true);
+                        field.set(object, injectInstance);
+                    }
+                }
+
                 if (injectInstance == null) {
                     try {
                         injectInstance = fieldType.newInstance();
@@ -98,10 +129,7 @@ public class AndroidSpringMvc {
                         throw new RuntimeException(fieldType + " cannot Autowired inject");
                     }
                 }
-
             }
-
-            Log.i("mvc",field.getName()+"");
         }
 
     }
