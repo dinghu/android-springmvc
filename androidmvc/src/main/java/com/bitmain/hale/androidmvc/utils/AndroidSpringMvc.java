@@ -1,5 +1,7 @@
 package com.bitmain.hale.androidmvc.utils;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,7 +15,9 @@ import com.bitmain.hale.androidmvc.di.Service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by harry.ding on 2018/8/15.
@@ -46,10 +50,37 @@ public class AndroidSpringMvc {
         return injectInstance;
     }
 
+    public static Field[] getAllFields(Object object) {
+        Class clazz = object.getClass();
+        List<Field> fieldList = new ArrayList<>();
+        int extendCount = 0;
+        int maxExtendCount = 3;
+        while (clazz != null) {
+            fieldList.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredFields())));
+            extendCount++;
+            clazz = clazz.getSuperclass();
+            if (clazz != null) {
+                extendCount++;
+                if (clazz.getName().startsWith("android.") || clazz.getName().startsWith("java.")) {
+                    break;
+                }
+
+                if (extendCount >= maxExtendCount) {
+                    break;
+                }
+            }
+
+        }
+        Field[] fields = new Field[fieldList.size()];
+        fieldList.toArray(fields);
+        return fields;
+    }
+
+
     private void injectObject(Object object) throws Exception {
-        Class<? extends Object> clazz = object.getClass();
+//        Class<? extends Object> clazz = object.getClass();
         // 查询类上是否存在注解
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = getAllFields(object);//clazz.getDeclaredFields();
         for (Field field : fields) {
             Autowired fieldAnnotation = field.getAnnotation(Autowired.class);
             if (fieldAnnotation != null) {
